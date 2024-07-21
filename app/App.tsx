@@ -1,6 +1,7 @@
 import React from "react";
 import { AppShell, Burger } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
@@ -16,14 +17,13 @@ function App() {
     >
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        <div>Helloooooooooo</div>
+        <div>Header</div>
       </AppShell.Header>
 
-      <h1>Hello</h1>
-      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+      <Navbar />
 
       <AppShell.Main>
-        <h1>Hello</h1>
+        <h1>Main</h1>
       </AppShell.Main>
     </AppShell>
   );
