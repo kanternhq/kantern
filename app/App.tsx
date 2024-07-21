@@ -1,18 +1,31 @@
 import React from "react";
-// import { useState } from "react";
-// import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
-import Navbar from "./components/Navbar";
+import { AppShell, Burger } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 function App() {
+  const [opened, { toggle }] = useDisclosure();
   return (
-    <div className="container">
-      <Navbar />
-      <div className="container mx-auto p-4">
-        {/* Your main content goes here */}
-        <h1 className="text-2xl font-bold">Welcome to the Kubernetes GUI</h1>
-      </div>
-    </div>
+    <AppShell
+      header={{ height: 60 }}
+      navbar={{
+        width: 300,
+        breakpoint: "sm",
+        collapsed: { mobile: !opened },
+      }}
+      padding="md"
+    >
+      <AppShell.Header>
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <div>Helloooooooooo</div>
+      </AppShell.Header>
+
+      <h1>Hello</h1>
+      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+
+      <AppShell.Main>
+        <h1>Hello</h1>
+      </AppShell.Main>
+    </AppShell>
   );
 }
 
