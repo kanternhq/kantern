@@ -1,12 +1,7 @@
 import React from "react";
-import { Typography } from "@mui/material";
 
 function Dashboard() {
-  return (
-    <Typography variant="h4" component="h1" gutterBottom>
-      Dashy
-    </Typography>
-  );
+  return <h1>Dashboard</h1>;
 }
 
 export default Dashboard;

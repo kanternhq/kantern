@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Navbar from "./components/Navbar";
@@ -11,14 +11,20 @@ import Deployments from "./pages/Deployments";
 const theme = createTheme();
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Box sx={{ display: "flex" }}>
-          <Navbar />
-          <Sidebar />
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Navbar toggleSidebar={toggleSidebar} />
+          <Sidebar open={sidebarOpen} />
+          <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/pods" element={<Pods />} />

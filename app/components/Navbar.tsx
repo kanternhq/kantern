@@ -2,7 +2,11 @@ import React from "react";
 import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
-function Navbar() {
+interface NavbarProps {
+  toggleSidebar: () => void;
+}
+
+function Navbar({ toggleSidebar }: NavbarProps) {
   return (
     <AppBar
       position="fixed"
@@ -11,8 +15,9 @@ function Navbar() {
       <Toolbar>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
+          aria-label="toggle drawer"
           edge="start"
+          onClick={toggleSidebar}
           sx={{ mr: 2 }}
         >
           <MenuIcon />

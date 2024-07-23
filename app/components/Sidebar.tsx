@@ -15,15 +15,30 @@ import CloudQueueIcon from "@mui/icons-material/CloudQueue";
 
 const drawerWidth = 240;
 
-function Sidebar() {
+interface SidebarProps {
+  open: boolean;
+}
+
+function Sidebar({ open }: SidebarProps) {
   return (
     <Drawer
       variant="permanent"
-      sx={{
-        width: drawerWidth,
+      sx={(theme) => ({
+        width: open ? drawerWidth : 0,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
-      }}
+        [`& .MuiDrawer-paper`]: {
+          width: open ? drawerWidth : theme.spacing(7),
+          [theme.breakpoints.up("sm")]: {
+            width: open ? drawerWidth : theme.spacing(9),
+          },
+          boxSizing: "border-box",
+          transition: theme.transitions.create("width", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          overflowX: "hidden",
+        },
+      })}
     >
       <Toolbar />
       <List>
@@ -43,7 +58,7 @@ function Sidebar() {
         ].map((item) => (
           <ListItem button key={item.text} component={Link} to={item.path}>
             <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+            {open && <ListItemText primary={item.text} />}
           </ListItem>
         ))}
       </List>
