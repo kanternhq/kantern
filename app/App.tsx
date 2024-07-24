@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Navbar from "./components/Navbar";
@@ -7,17 +7,41 @@ import Dashboard from "./pages/Dashboard";
 import Pods from "./pages/Pods";
 import Services from "./pages/Services";
 import Deployments from "./pages/Deployments";
+import Settings from "./pages/Settings";
+
+// Import the tauri API
+import { invoke } from "@tauri-apps/api/tauri";
 
 const theme = createTheme();
 
 const drawerWidth = 240;
-const closedDrawerWidth = 56; // Approximately the width of the icons
+const closedDrawerWidth = 56;
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [clusters, setClusters] = useState<string[]>([]);
+  const [currentCluster, setCurrentCluster] = useState<string>("");
+
+  useEffect(() => {
+    // Fetch clusters from kubeconfig
+    invoke<string[]>("get_clusters")
+      .then((fetchedClusters) => {
+        setClusters(fetchedClusters);
+        if (fetchedClusters.length > 0) {
+          setCurrentCluster(fetchedClusters[0]);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleClusterChange = (cluster: string) => {
+    setCurrentCluster(cluster);
+    // Here you would typically update your Kubernetes client to use the new cluster
+    invoke("set_current_cluster", { cluster }).catch(console.error);
   };
 
   return (
@@ -25,7 +49,12 @@ function App() {
       <CssBaseline />
       <Router>
         <Box sx={{ display: "flex" }}>
-          <Navbar toggleSidebar={toggleSidebar} />
+          <Navbar
+            toggleSidebar={toggleSidebar}
+            currentCluster={currentCluster}
+            clusters={clusters}
+            onClusterChange={handleClusterChange}
+          />
           <Sidebar open={sidebarOpen} />
           <Box
             component="main"
@@ -43,10 +72,23 @@ function App() {
             })}
           >
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/pods" element={<Pods />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/deployments" element={<Deployments />} />
+              <Route
+                path="/"
+                element={<Dashboard currentCluster={currentCluster} />}
+              />
+              <Route
+                path="/pods"
+                element={<Pods currentCluster={currentCluster} />}
+              />
+              <Route
+                path="/services"
+                element={<Services currentCluster={currentCluster} />}
+              />
+              <Route
+                path="/deployments"
+                element={<Deployments currentCluster={currentCluster} />}
+              />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Box>
         </Box>

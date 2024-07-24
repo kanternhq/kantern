@@ -6,12 +6,15 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Box,
+  Divider,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LayersIcon from "@mui/icons-material/Layers";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import CloudQueueIcon from "@mui/icons-material/CloudQueue";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 const closedDrawerWidth = 56; // Approximately the width of the icons
@@ -21,6 +24,13 @@ interface SidebarProps {
 }
 
 function Sidebar({ open }: SidebarProps) {
+  const menuItems = [
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
+    { text: "Pods", icon: <LayersIcon />, path: "/pods" },
+    { text: "Services", icon: <SettingsEthernetIcon />, path: "/services" },
+    { text: "Deployments", icon: <CloudQueueIcon />, path: "/deployments" },
+  ];
+
   return (
     <Drawer
       variant="permanent"
@@ -41,26 +51,44 @@ function Sidebar({ open }: SidebarProps) {
       })}
     >
       <Toolbar />
-      <List>
-        {[
-          { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-          { text: "Pods", icon: <LayersIcon />, path: "/pods" },
-          {
-            text: "Services",
-            icon: <SettingsEthernetIcon />,
-            path: "/services",
-          },
-          {
-            text: "Deployments",
-            icon: <CloudQueueIcon />,
-            path: "/deployments",
-          },
-        ].map((item) => (
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <List>
+          {menuItems.map((item) => (
+            <ListItem
+              button
+              key={item.text}
+              component={Link}
+              to={item.path}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.text}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItem>
+          ))}
+        </List>
+        <Box sx={{ flexGrow: 1 }} />{" "}
+        {/* This pushes the settings button to the bottom */}
+        <Divider />
+        <List>
           <ListItem
             button
-            key={item.text}
             component={Link}
-            to={item.path}
+            to="/settings"
             sx={{
               minHeight: 48,
               justifyContent: open ? "initial" : "center",
@@ -74,12 +102,12 @@ function Sidebar({ open }: SidebarProps) {
                 justifyContent: "center",
               }}
             >
-              {item.icon}
+              <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+            <ListItemText primary="Settings" sx={{ opacity: open ? 1 : 0 }} />
           </ListItem>
-        ))}
-      </List>
+        </List>
+      </Box>
     </Drawer>
   );
 }

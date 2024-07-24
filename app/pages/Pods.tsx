@@ -1,11 +1,19 @@
-import React from "react";
 import { Typography } from "@mui/material";
 
-function Pods() {
+interface DashboardProps {
+  currentCluster: string;
+}
+
+function Pods({ currentCluster }: DashboardProps) {
   return (
-    <Typography variant="h4" component="h1" gutterBottom>
-      Pods
-    </Typography>
+    <div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Pods
+      </Typography>
+      <Typography variant="subtitle1">
+        Current Cluster: {currentCluster}
+      </Typography>
+    </div>
   );
 }
 

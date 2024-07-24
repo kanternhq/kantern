@@ -1,12 +1,20 @@
-import React from "react";
 import { Typography } from "@mui/material";
 
-function Deployments() {
+interface DashboardProps {
+  currentCluster: string;
+}
+
+function Deployment({ currentCluster }: DashboardProps) {
   return (
-    <Typography variant="h4" component="h1" gutterBottom>
-      Pods
-    </Typography>
+    <div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Deployment
+      </Typography>
+      <Typography variant="subtitle1">
+        Current Cluster: {currentCluster}
+      </Typography>
+    </div>
   );
 }
 
-export default Deployments;
+export default Deployment;

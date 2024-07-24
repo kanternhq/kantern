@@ -1,12 +1,21 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import ClusterSelector from "./ClusterSelector";
 
 interface NavbarProps {
   toggleSidebar: () => void;
+  currentCluster: string;
+  clusters: string[];
+  onClusterChange: (cluster: string) => void;
 }
 
-function Navbar({ toggleSidebar }: NavbarProps) {
+function Navbar({
+  toggleSidebar,
+  currentCluster,
+  clusters,
+  onClusterChange,
+}: NavbarProps) {
   return (
     <AppBar
       position="fixed"
@@ -22,9 +31,16 @@ function Navbar({ toggleSidebar }: NavbarProps) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Kubernetes GUI
         </Typography>
+        <Box>
+          <ClusterSelector
+            currentCluster={currentCluster}
+            clusters={clusters}
+            onClusterChange={onClusterChange}
+          />
+        </Box>
       </Toolbar>
     </AppBar>
   );

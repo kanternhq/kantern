@@ -1,11 +1,19 @@
-import React from "react";
 import { Typography } from "@mui/material";
 
-function Services() {
+interface DashboardProps {
+  currentCluster: string;
+}
+
+function Services({ currentCluster }: DashboardProps) {
   return (
-    <Typography variant="h4" component="h1" gutterBottom>
-      Services
-    </Typography>
+    <div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Services
+      </Typography>
+      <Typography variant="subtitle1">
+        Current Cluster: {currentCluster}
+      </Typography>
+    </div>
   );
 }
 
