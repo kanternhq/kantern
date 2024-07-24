@@ -10,6 +10,9 @@ import Deployments from "./pages/Deployments";
 
 const theme = createTheme();
 
+const drawerWidth = 240;
+const closedDrawerWidth = 56; // Approximately the width of the icons
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -24,7 +27,21 @@ function App() {
         <Box sx={{ display: "flex" }}>
           <Navbar toggleSidebar={toggleSidebar} />
           <Sidebar open={sidebarOpen} />
-          <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+          <Box
+            component="main"
+            sx={(theme) => ({
+              flexGrow: 1,
+              p: 3,
+              mt: 8,
+              transition: theme.transitions.create("margin", {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
+              marginLeft: sidebarOpen
+                ? `${drawerWidth}px`
+                : `${closedDrawerWidth}px`,
+            })}
+          >
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/pods" element={<Pods />} />

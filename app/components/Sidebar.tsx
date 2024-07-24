@@ -14,6 +14,7 @@ import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import CloudQueueIcon from "@mui/icons-material/CloudQueue";
 
 const drawerWidth = 240;
+const closedDrawerWidth = 56; // Approximately the width of the icons
 
 interface SidebarProps {
   open: boolean;
@@ -24,19 +25,18 @@ function Sidebar({ open }: SidebarProps) {
     <Drawer
       variant="permanent"
       sx={(theme) => ({
-        width: open ? drawerWidth : 0,
-        flexShrink: 0,
+        width: open ? drawerWidth : closedDrawerWidth,
+        transition: theme.transitions.create("width", {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
         [`& .MuiDrawer-paper`]: {
-          width: open ? drawerWidth : theme.spacing(7),
-          [theme.breakpoints.up("sm")]: {
-            width: open ? drawerWidth : theme.spacing(9),
-          },
-          boxSizing: "border-box",
+          width: open ? drawerWidth : closedDrawerWidth,
+          overflowX: "hidden",
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
           }),
-          overflowX: "hidden",
         },
       })}
     >
@@ -56,9 +56,27 @@ function Sidebar({ open }: SidebarProps) {
             path: "/deployments",
           },
         ].map((item) => (
-          <ListItem button key={item.text} component={Link} to={item.path}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            {open && <ListItemText primary={item.text} />}
+          <ListItem
+            button
+            key={item.text}
+            component={Link}
+            to={item.path}
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
           </ListItem>
         ))}
       </List>
