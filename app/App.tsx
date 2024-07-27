@@ -10,7 +10,7 @@ import Deployments from "./pages/Deployments";
 import Settings from "./pages/Settings";
 
 // Import the tauri API
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 const theme = createTheme();
 
@@ -40,7 +40,6 @@ function App() {
 
   const handleClusterChange = (cluster: string) => {
     setCurrentCluster(cluster);
-    // Here you would typically update your Kubernetes client to use the new cluster
     invoke("set_current_cluster", { cluster }).catch(console.error);
   };
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClusterSelector from "./ClusterSelector";
@@ -32,7 +31,7 @@ function Navbar({
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Kubernetes GUI
+          Kantern
         </Typography>
         <Box>
           <ClusterSelector
