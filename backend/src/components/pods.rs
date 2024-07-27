@@ -38,3 +38,21 @@ pub async fn get_pods(namespace: Option<String>) -> Result<Vec<PodInfo>, String>
 
     Ok(pod_info)
 }
+
+#[tauri::command]
+pub async fn get_pod_definition(name: String, namespace: String) -> Result<String, String> {
+    let client = Client::try_default().await.map_err(|e| e.to_string())?;
+    let pods: Api<Pod> = Api::namespaced(client, &namespace);
+    let pod = pods.get(&name).await.map_err(|e| e.to_string())?;
+    serde_yaml::to_string(&pod).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn delete_pod(name: String, namespace: String) -> Result<(), String> {
+    let client = Client::try_default().await.map_err(|e| e.to_string())?;
+    let pods: Api<Pod> = Api::namespaced(client, &namespace);
+    pods.delete(&name, &Default::default())
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}

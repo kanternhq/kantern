@@ -17,6 +17,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             components::pods::get_pods,
+            components::pods::get_pod_definition,
+            components::pods::delete_pod,
             components::clusters::get_clusters,
             //components::clusters::set_current_cluster,
             components::namespaces::get_namespaces

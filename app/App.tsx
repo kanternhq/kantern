@@ -77,8 +77,8 @@ function App() {
             component="main"
             sx={(theme) => ({
               flexGrow: 1,
-              p: 3,
-              mt: 8,
+              height: "100vh",
+              overflow: "auto",
               transition: theme.transitions.create("margin", {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
@@ -86,6 +86,8 @@ function App() {
               marginLeft: sidebarOpen
                 ? `${drawerWidth}px`
                 : `${closedDrawerWidth}px`,
+              marginTop: "64px", // Height of the AppBar
+              padding: 0, // Remove padding
             })}
           >
             <Routes>
