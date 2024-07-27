@@ -1,12 +1,16 @@
-import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClusterSelector from "./ClusterSelector";
+import NamespaceSelector from "./NamespaceSelector";
 
 interface NavbarProps {
   toggleSidebar: () => void;
   currentCluster: string;
   clusters: string[];
   onClusterChange: (cluster: string) => void;
+  currentNamespace: string;
+  namespaces: string[];
+  onNamespaceChange: (namespace: string) => void;
 }
 
 function Navbar({
@@ -14,6 +18,9 @@ function Navbar({
   currentCluster,
   clusters,
   onClusterChange,
+  currentNamespace,
+  namespaces,
+  onNamespaceChange,
 }: NavbarProps) {
   return (
     <AppBar
@@ -23,23 +30,26 @@ function Navbar({
       <Toolbar>
         <IconButton
           color="inherit"
-          aria-label="toggle drawer"
-          edge="start"
+          aria-label="open drawer"
           onClick={toggleSidebar}
-          sx={{ mr: 2 }}
+          edge="start"
+          sx={{ marginRight: 2 }}
         >
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Kantern
         </Typography>
-        <Box>
-          <ClusterSelector
-            currentCluster={currentCluster}
-            clusters={clusters}
-            onClusterChange={onClusterChange}
-          />
-        </Box>
+        <ClusterSelector
+          currentCluster={currentCluster}
+          clusters={clusters}
+          onClusterChange={onClusterChange}
+        />
+        <NamespaceSelector
+          currentNamespace={currentNamespace}
+          namespaces={namespaces}
+          onNamespaceChange={onNamespaceChange}
+        />
       </Toolbar>
     </AppBar>
   );

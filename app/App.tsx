@@ -21,6 +21,8 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clusters, setClusters] = useState<string[]>([]);
   const [currentCluster, setCurrentCluster] = useState<string>("");
+  const [namespaces, setNamespaces] = useState<string[]>([]);
+  const [currentNamespace, setCurrentNamespace] = useState<string>("");
 
   useEffect(() => {
     // Fetch clusters from kubeconfig
@@ -29,6 +31,15 @@ function App() {
         setClusters(fetchedClusters);
         if (fetchedClusters.length > 0) {
           setCurrentCluster(fetchedClusters[0]);
+        }
+      })
+      .catch(console.error);
+
+    invoke<string[]>("get_namespaces")
+      .then((fetchedNamespaces) => {
+        setNamespaces(fetchedNamespaces);
+        if (fetchedNamespaces.length > 0) {
+          setCurrentNamespace(fetchedNamespaces[0]);
         }
       })
       .catch(console.error);
@@ -43,6 +54,10 @@ function App() {
     invoke("set_current_cluster", { cluster }).catch(console.error);
   };
 
+  const handleNamespaceChange = (namespace: string) => {
+    setCurrentNamespace(namespace);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -53,6 +68,9 @@ function App() {
             currentCluster={currentCluster}
             clusters={clusters}
             onClusterChange={handleClusterChange}
+            currentNamespace={currentNamespace}
+            namespaces={namespaces}
+            onNamespaceChange={handleNamespaceChange}
           />
           <Sidebar open={sidebarOpen} />
           <Box
@@ -77,7 +95,12 @@ function App() {
               />
               <Route
                 path="/pods"
-                element={<Pods currentCluster={currentCluster} />}
+                element={
+                  <Pods
+                    currentCluster={currentCluster}
+                    currentNamespace={currentNamespace}
+                  />
+                }
               />
               <Route
                 path="/services"
