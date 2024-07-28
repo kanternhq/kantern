@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -14,12 +14,17 @@ import {
   Box,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 
 interface PodInfo {
   name: string;
   namespace: string;
   status: string;
+  age: number;
+  restarts: number;
+  ip: string;
+  node: string;
 }
 
 interface PodsProps {
@@ -27,16 +32,34 @@ interface PodsProps {
   currentNamespace: string;
 }
 
+function formatAge(ageInSeconds: number): string {
+  if (ageInSeconds < 60) return `${ageInSeconds}s`;
+  if (ageInSeconds < 3600) return `${Math.floor(ageInSeconds / 60)}m`;
+  if (ageInSeconds < 86400) return `${Math.floor(ageInSeconds / 3600)}h`;
+  return `${Math.floor(ageInSeconds / 86400)}d`;
+}
+
 function Pods({ currentCluster, currentNamespace }: PodsProps) {
   const [pods, setPods] = useState<PodInfo[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPod, setSelectedPod] = useState<PodInfo | null>(null);
 
+  const fetchPods = useCallback(async () => {
+    try {
+      const fetchedPods = await invoke<PodInfo[]>("get_pods", {
+        namespace: currentNamespace,
+      });
+      setPods(fetchedPods);
+    } catch (error) {
+      console.error("Failed to fetch pods:", error);
+    }
+  }, [currentNamespace]);
+
   useEffect(() => {
-    invoke<PodInfo[]>("get_pods", { namespace: currentNamespace })
-      .then(setPods)
-      .catch(console.error);
-  }, [currentCluster, currentNamespace]);
+    fetchPods();
+    const intervalId = setInterval(fetchPods, 1000);
+    return () => clearInterval(intervalId);
+  }, [fetchPods, currentCluster]);
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -50,40 +73,30 @@ function Pods({ currentCluster, currentNamespace }: PodsProps) {
     setAnchorEl(null);
     setSelectedPod(null);
   };
+  const navigate = useNavigate();
 
   const handleMenuAction = async (action: string) => {
     if (selectedPod) {
-      switch (action) {
-        case "definition":
-          try {
-            const definition = await invoke<string>("get_pod_definition", {
-              name: selectedPod.name,
-              namespace: selectedPod.namespace,
-            });
-            console.log(definition);
-            // Display the definition in a modal or new window
-          } catch (error) {
-            console.error("Failed to get pod definition:", error);
-          }
-          break;
-        case "delete":
-          try {
-            await invoke("delete_pod", {
-              name: selectedPod.name,
-              namespace: selectedPod.namespace,
-            });
-            // Refresh the pod list
-            invoke<PodInfo[]>("get_pods", { namespace: currentNamespace })
-              .then(setPods)
-              .catch(console.error);
-          } catch (error) {
-            console.error("Failed to delete pod:", error);
-          }
-          break;
-        // Implement other actions
+      console.log(`Action: ${action}, Pod: ${selectedPod.name}`);
+      if (action === "edit") {
+        try {
+          const yaml = await invoke<string>("get_pod_yaml", {
+            name: selectedPod.name,
+            namespace: selectedPod.namespace,
+          });
+
+          // Encode the YAML to be passed as a URL parameter
+          const encodedYaml = encodeURIComponent(yaml);
+
+          navigate(
+            `/yaml-editor?pod=${selectedPod.name}&namespace=${selectedPod.namespace}&yaml=${encodedYaml}`,
+          );
+        } catch (error) {
+          console.error("Failed to get pod YAML:", error);
+        }
       }
+      handleMenuClose();
     }
-    handleMenuClose();
   };
 
   return (
@@ -95,12 +108,16 @@ function Pods({ currentCluster, currentNamespace }: PodsProps) {
         Pods in {currentNamespace}
       </Typography>
       <TableContainer component={Paper} sx={{ flexGrow: 1, height: "100%" }}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label="sticky table" size="small">
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Namespace</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Restarts</TableCell>
+              <TableCell>Age</TableCell>
+              <TableCell>IP</TableCell>
+              <TableCell>Node</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -110,8 +127,13 @@ function Pods({ currentCluster, currentNamespace }: PodsProps) {
                 <TableCell>{pod.name}</TableCell>
                 <TableCell>{pod.namespace}</TableCell>
                 <TableCell>{pod.status}</TableCell>
+                <TableCell>{pod.restarts}</TableCell>
+                <TableCell>{formatAge(pod.age)}</TableCell>
+                <TableCell>{pod.ip}</TableCell>
+                <TableCell>{pod.node}</TableCell>
                 <TableCell>
                   <IconButton
+                    size="small"
                     aria-label="more"
                     id={`long-button-${pod.name}`}
                     aria-controls={`long-menu-${pod.name}`}
@@ -136,7 +158,7 @@ function Pods({ currentCluster, currentNamespace }: PodsProps) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        {["definition", "shell", "delete", "describe"].map((option) => (
+        {["definition", "shell", "delete", "edit", "describe"].map((option) => (
           <MenuItem key={option} onClick={() => handleMenuAction(option)}>
             {option}
           </MenuItem>

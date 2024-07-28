@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -8,6 +8,7 @@ import Pods from "./pages/Pods";
 import Services from "./pages/Services";
 import Deployments from "./pages/Deployments";
 import Settings from "./pages/Settings";
+import YamlEditorPage from "./pages/YamlEditorPage";
 
 // Import the tauri API
 import { invoke } from "@tauri-apps/api/core";
@@ -104,6 +105,7 @@ function App() {
                   />
                 }
               />
+              <Route path="/yaml-editor" element={<YamlEditorPage />} />
               <Route
                 path="/services"
                 element={<Services currentCluster={currentCluster} />}
