@@ -8,6 +8,8 @@ import Pods from "./pages/Pods";
 import Services from "./pages/Services";
 import Deployments from "./pages/Deployments";
 import Settings from "./pages/Settings";
+import StatefulSets from "./pages/StatefulSets";
+import DaemonSets from "./pages/DaemonSets";
 import YamlEditorPage from "./pages/YamlEditorPage";
 
 // Import the tauri API
@@ -109,6 +111,24 @@ function App() {
                 path="/deployments"
                 element={
                   <Deployments
+                    currentCluster={currentCluster}
+                    currentNamespace={currentNamespace}
+                  />
+                }
+              />
+              <Route
+                path="/statefulsets"
+                element={
+                  <StatefulSets
+                    currentCluster={currentCluster}
+                    currentNamespace={currentNamespace}
+                  />
+                }
+              />
+              <Route
+                path="/daemonsets"
+                element={
+                  <DaemonSets
                     currentCluster={currentCluster}
                     currentNamespace={currentNamespace}
                   />

@@ -23,6 +23,12 @@ fn main() {
             components::pods::delete_pod,
             components::deployments::get_deployments,
             components::deployments::get_deployment_yaml,
+            components::statefulsets::get_stateful_sets,
+            components::statefulsets::get_stateful_set_yaml,
+            components::statefulsets::delete_stateful_set,
+            components::daemonsets::get_daemon_sets,
+            components::daemonsets::get_daemon_set_yaml,
+            components::daemonsets::delete_daemon_set,
             components::clusters::get_clusters,
             //components::clusters::set_current_cluster,
             components::namespaces::get_namespaces
