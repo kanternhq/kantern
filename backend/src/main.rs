@@ -29,6 +29,9 @@ fn main() {
             components::daemonsets::get_daemon_sets,
             components::daemonsets::get_daemon_set_yaml,
             components::daemonsets::delete_daemon_set,
+            components::services::get_services,
+            components::services::get_service_yaml,
+            components::services::delete_service,
             components::clusters::get_clusters,
             //components::clusters::set_current_cluster,
             components::namespaces::get_namespaces

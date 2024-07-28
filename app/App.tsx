@@ -137,7 +137,12 @@ function App() {
               <Route path="/yaml-editor" element={<YamlEditorPage />} />
               <Route
                 path="/services"
-                element={<Services currentCluster={currentCluster} />}
+                element={
+                  <Services
+                    currentCluster={currentCluster}
+                    currentNamespace={currentNamespace}
+                  />
+                }
               />
               <Route path="/settings" element={<Settings />} />
             </Routes>
