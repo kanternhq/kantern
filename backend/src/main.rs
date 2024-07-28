@@ -18,8 +18,11 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             components::pods::get_pods,
             components::pods::get_pod_yaml,
+            components::pods::apply_pod_yaml,
             components::pods::get_pod_definition,
             components::pods::delete_pod,
+            components::deployments::get_deployments,
+            components::deployments::get_deployment_yaml,
             components::clusters::get_clusters,
             //components::clusters::set_current_cluster,
             components::namespaces::get_namespaces

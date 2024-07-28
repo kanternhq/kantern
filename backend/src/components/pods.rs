@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
 use k8s_openapi::api::core::v1::Pod;
 use kube::{
-    api::{Api, ListParams},
+    api::{Api, ListParams, Patch, PatchParams},
     Client,
 };
 use serde::Serialize;
+use serde_json::Value;
 use serde_yaml;
 
 #[derive(Serialize)]
@@ -16,6 +17,38 @@ pub struct PodInfo {
     restarts: i32,
     ip: String,
     node: String,
+}
+
+#[tauri::command]
+pub async fn apply_pod_yaml(yaml: String) -> Result<String, String> {
+    let client = Client::try_default().await.map_err(|e| e.to_string())?;
+
+    // Parse the YAML into a serde_yaml::Value
+    let pod: Value = serde_yaml::from_str(&yaml).map_err(|e| e.to_string())?;
+
+    // Extract the name and namespace
+    let name = pod["metadata"]["name"]
+        .as_str()
+        .ok_or("Pod name not found")?;
+    let namespace = pod["metadata"]["namespace"]
+        .as_str()
+        .ok_or("Namespace not found")?;
+
+    // Create an API client for the Pod resource
+    let pods: Api<Pod> = Api::namespaced(client, namespace);
+
+    // Apply the changes using server-side apply
+    let patch_params = PatchParams::apply("kubectl-apply").force();
+    let patch = Patch::Apply(&pod);
+
+    pods.patch(name, &patch_params, &patch)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(format!(
+        "Successfully applied changes to pod {} in namespace {}",
+        name, namespace
+    ))
 }
 
 #[tauri::command]

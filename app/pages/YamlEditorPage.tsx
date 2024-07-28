@@ -3,6 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import YamlEditor from "../components/YamlEditor";
 import { invoke } from "@tauri-apps/api/core";
+import { Snackbar, Alert } from "@mui/material";
 
 function YamlEditorPage() {
   const [yaml, setYaml] = useState("");
@@ -10,6 +11,10 @@ function YamlEditorPage() {
   const [namespace, setNamespace] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const [saveStatus, setSaveStatus] = useState<{
+    message: string;
+    error: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -30,9 +35,14 @@ function YamlEditorPage() {
     }
   }, [location]);
 
-  const handleSave = () => {
-    // Implement save functionality
-    console.log("Saving YAML:", yaml);
+  const handleSave = async () => {
+    try {
+      const result = await invoke<string>("apply_pod_yaml", { yaml });
+      setSaveStatus({ message: result, error: false });
+    } catch (error) {
+      console.error("Failed to apply YAML:", error);
+      setSaveStatus({ message: `Failed to apply YAML: ${error}`, error: true });
+    }
   };
 
   const handleBack = () => {
@@ -57,6 +67,19 @@ function YamlEditorPage() {
       <Box sx={{ flexGrow: 1, border: "1px solid #ddd", borderRadius: 1 }}>
         <YamlEditor yaml={yaml} onChange={setYaml} />
       </Box>
+      <Snackbar
+        open={Boolean(saveStatus)}
+        autoHideDuration={6000}
+        onClose={() => setSaveStatus(null)}
+      >
+        <Alert
+          onClose={() => setSaveStatus(null)}
+          severity={saveStatus?.error ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {saveStatus?.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
